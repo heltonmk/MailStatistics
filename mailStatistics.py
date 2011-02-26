@@ -31,12 +31,15 @@ def countWords(database, words):
     for word in words:
         # Remove punctuation signs (. , !)
         word = word.lstrip('(>')
-        word = word.rstrip('.!;,?')
+        word = word.rstrip('.!;,?)')
 
-        if word in database:
-            database[word] += 1
-        else:
-            database[word] = 1
+        # Word can become empty after strip
+        # Also ignores words with 3 or less characters
+        if word != "" and len(word) > 3:
+            if word in database:
+                database[word] += 1
+            else:
+                database[word] = 1
 
 
 def printDatabase(database):
