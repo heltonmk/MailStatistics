@@ -1,0 +1,21 @@
+Mail Statistics
+-----------------
+This small Python script retrieves all emails from a Label on gmail and
+generates a statistic on the ocurrence of the words.
+This script uses the Pattern web mining module found in:
+http://www.clips.ua.ac.be/pages/pattern
+
+Installation instructions
+-------------------------------
+- Clone this project
+- Download Pattern module (direct link to version 1.4 -
+  http://www.clips.ua.ac.be/media/pattern-1.4.zip)
+- Copy pattern-1.4.zip to the project folder (inside MailStatistics)
+- unzip pattern-1.4.zip
+
+Usage
+--------------------
+- On terminal, run: "python mailStatistics.py"
+- It will ask your gmail login, password
+- When asked for Folder name, insert Label name from gmail
+
