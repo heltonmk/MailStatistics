@@ -19,3 +19,17 @@ Usage
 - It will ask your gmail login, password
 - When asked for Folder name, insert Label name from gmail
 
+Changelog
+--------------------
+- 26.02.2011 [cheng]
+    -getpass to hide password input on the screen
+    -Increment output[i].txt when filename already exists
+    -Added leading and trailing " to the punctuation signs to be stripped from the words
+    -Filter List: list of expressions to be filtered from the results (regular expressions)
+    -Initial filters: email address, date, URL
+- 26.02.2011 [helton]
+    -First release
+
+Known Issues
+--------------------
+- Cached emails are not updated with Gmail
