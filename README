@@ -21,6 +21,12 @@ Usage
 
 Changelog
 --------------------
+- 01.03.2011 [angela]
+    - Ignore quoted text in reply email (limited to two reply formats commonly found in Gmail with English language settings)
+    - Split words separated by punctuation signs without spaces
+    - Ignore subject of reply email
+    - User can choose if search is case sensitive or insensitive
+    - Added function: encode to utf8
 - 27.02.2011 [helton]
     - Code cleanup
 - 26.02.2011 [cheng]
