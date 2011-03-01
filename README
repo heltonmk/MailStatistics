@@ -39,3 +39,4 @@ Changelog
 Known Issues
 --------------------
 - Cached emails are not updated with Gmail
+- Cannot read HTML content inside emails (emails with formatted text)
