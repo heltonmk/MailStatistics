@@ -57,7 +57,7 @@ def mostUsedWordsInFolder(mail, folder, bCaseSensitive):
         words = []
 
         print 'Reading mail ' + str(i+1) + ' of ' + str(mail.folders[folder].count)
-        message = mail.folders[folder].read(i, attachments=False, cached=True)
+        message = mail.folders[folder].read(i, attachments=False, cached=False)
 
         # Email subject
         # (If the email is a reply, do not count the subject as it is a repetition

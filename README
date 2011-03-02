@@ -21,6 +21,8 @@ Usage
 
 Changelog
 --------------------
+- 01.03.2011 [cheng]
+    - Cache temporarily disabled (temporary workaround for known issue 1)
 - 01.03.2011 [angela]
     - Ignore quoted text in reply email (limited to two reply formats commonly found in Gmail with English language settings)
     - Split words separated by punctuation signs without spaces
@@ -44,5 +46,5 @@ Changelog
 
 Known Issues
 --------------------
-- Cached emails are not updated with Gmail
-- Cannot read HTML content inside emails (emails with formatted text)
+1) Cached emails are not updated with Gmail (workaround implemented)
+2) Cannot read HTML content inside emails (emails with formatted text)
