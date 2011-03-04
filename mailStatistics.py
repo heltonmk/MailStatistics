@@ -16,6 +16,7 @@ import operator
 import getpass
 import re
 import os.path
+import mimify
 
 
 def encode_utf8(string):
@@ -28,7 +29,7 @@ def encode_utf8(string):
     return str(string)
 
 
-def mostUsedWordsInFolder(mail, folder, bCaseSensitive):
+def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
     if folder not in mail.folders:
         print("ERROR: Folder doesn't exist!")
         return
@@ -38,18 +39,18 @@ def mostUsedWordsInFolder(mail, folder, bCaseSensitive):
     # Create word count database. A dict where key=word, value=word count
     database = {}
 
-    # List of regular expressions of quote lines (we call quote line the line
-    # introducing the quoted text in a reply email).
-    # Supported formats:
-    #   2011/2/28 Eduardo Cheng <eduardo@cheng.com>
-    #   On Mon, Feb 28, 2011 at 12:00, Eduardo Cheng <eduardo@cheng.com> wrote:
-    lReQuoteLine = [r"[0-9]{4}\/[0-9]{1,2}\/[0-9]{1,2} [a-zA-Z][ a-zA-Z\-]* \<[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\>", r"On [A-Z][a-z]{2}, [A-Z][a-z]{2} [0-9]{1,2}, [0-9]{4} at [0-9]{1,2}\:[0-9]{2}, [a-zA-Z][ a-zA-Z\-]* \<[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\> wrote\:"]
+    # List of prefixes indicating it is a reply message
+    replyPrefixes = ['RE:', 'Re:', 'RES:', 'Res:', '=?ISO-8859-1?Q?Re=']
+
+    # Create list of identifiers of reply lines (we call reply line
+    # the line introducing the quoted text in a reply message)
+    replyLineIdentifiers = []
+
+    # List of regular expressions to be filtered from the results
+    filterlist = [ r".*\@.*\.com.*" , r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*" , r"^\=\?.*" ]
 
     # Regular expression of word separators
-    reSeparator = r"[\s\.\,\;\:\!\?\(\)\<\>\"\'\*\\\/\=\+\~\_\[\]\{\}]+"
-
-    # List of prefixes indicating it is a reply email
-    lReplyPrefixes = ['RE:', 'Re:', 'RES:', 'Res:']
+    separators = r"[\s\.\,\;\:\!\?\(\)\<\>\"\'\*\\\/\=\+\~\_\[\]\{\}]+"
 
     for i in range(mail.folders[folder].count):
 
@@ -57,56 +58,102 @@ def mostUsedWordsInFolder(mail, folder, bCaseSensitive):
         words = []
 
         print 'Reading mail ' + str(i+1) + ' of ' + str(mail.folders[folder].count)
-        message = mail.folders[folder].read(i, attachments=False, cached=True)
 
-        # Email subject
-        # (If the email is a reply, do not count the subject as it is a repetition
-        #  of the first email's subject)
-        lPrefixSplit = message.subject.split(None,1)
-        if len(lPrefixSplit[0]) > 0:
-            if lPrefixSplit[0] not in lReplyPrefixes:
-                words.extend(re.split(reSeparator, message.subject))
+        # Read old messages first
+        j = mail.folders[folder].count - i - 1
+        message = mail.folders[folder].read(j, attachments=False, cached=False)
 
-        # Email body
-        lines = message.body.splitlines()
-        # Search for a quote line. Only count words before the first quote line.
-        bQuoteLineFound = False
-        for line in lines:
-            for regexp in lReQuoteLine:
-                if re.search(regexp, line):
-                    bQuoteLineFound = True
+        #---- Email subject ----
+
+        # Headers that contain non-ASCII data use the MIME encoded-word syntax
+        subject = message.subject
+        try:
+            subject = mimify.mime_decode_header(subject)
+        except UnicodeDecodeError:
+            pass
+
+        # Check if it is a reply message. If so, do not count the subject
+        # as it is a repetition of the first message's subject.
+
+        isReply = False
+        subjectPrefix = subject.split(None,1)[0]
+        if len(subjectPrefix) > 0:
+            if subjectPrefix in replyPrefixes:
+                isReply = True
+        if not isReply:
+            subjectWords = subject.split()
+            for word in subjectWords:
+                words = splitAndAddWord(word, filterlist, separators, words)
+
+        #---- Email body ----
+
+        if isReply:
+            # Search for a reply line. Only count words before the first reply line.
+            lines = message.body.splitlines()
+            replyLineFound = False
+            for line in lines:
+                for s in replyLineIdentifiers:
+                    if re.search(s, line):
+                        replyLineFound = True
+                        break
+                if replyLineFound:
                     break
-            if bQuoteLineFound:
-                break
-            else:
-                words.extend(re.split(reSeparator, line))
+                else:
+                    bodyWords = line.split()
+                    for word in bodyWords:
+                        words = splitAndAddWord(word, filterlist, separators, words)
+        else:
+            bodyWords = message.body.split()
+            for word in bodyWords:
+                words = splitAndAddWord(word, filterlist, separators, words)
 
         # Count words and add them to the database
-        countWords(database, words, bCaseSensitive)
+        countWords(database, words, isCaseSensitive)
+
+        # Update the reply line identifiers by adding the author's name and email address
+        replyLineIdentifiers = updateReplyLineIdentifiers(replyLineIdentifiers, message, isReply)
 
     printDatabase(sorted(database.iteritems(), key=operator.itemgetter(1), reverse=True))
 
 
-def countWords(database, words, bCaseSensitive):
+def splitAndAddWord(word, filters, separators, wordlist):
 
-    # List of regular expressions to be filtered from the results
-    filterlist = [ r".*\@.*\.com.*" , r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*" , r"^\=\?.*" ]
+    # If the word matches a filter, do not add it
+    inFilter = False
+    for regexp in filters:
+        if re.search(regexp, word):
+            inFilter = True
+            break
+    if not inFilter:
+        # Split word and add the resulting words to the word list
+        wordlist.extend(re.split(separators, word))
+    return wordlist
+
+
+def updateReplyLineIdentifiers(list, message, isReply):
+
+    # Get author's name and email address
+    authorIdentity = message.author
+    pos = authorIdentity.find(' <')
+    authorName = authorIdentity[0:pos]
+    authorEmail = message.email_address
+
+    # Update the list of identifiers for the next message
+    if isReply:
+        list.append(authorName)
+        list.append(authorEmail)
+    else:
+        list = [authorName, authorEmail]
+    return list
+
+
+def countWords(database, words, isCaseSensitive):
 
     for word in words:
 
         # Transform to lower case
-        if not bCaseSensitive:
+        if not isCaseSensitive:
             word = word.lower()
-
-        # Filter according to expressions in "filterlist"
-        inFilter = False
-        for regexp in filterlist:
-            if re.search(regexp, word):
-               inFilter = True
-               break
-
-        if inFilter:
-            continue
 
         # Ignores words with 3 or less characters
         if len(word) > 3:
@@ -143,9 +190,9 @@ def main():
     if caseSensitive not in ['0','1']:
         print("ERROR: Enter either 0 or 1!")
         return
-    bCaseSensitive = bool(int(caseSensitive))
+    isCaseSensitive = bool(int(caseSensitive))
     gmail = Mail(username, password, service=GMAIL)
-    mostUsedWordsInFolder(gmail, folder, bCaseSensitive)
+    mostUsedWordsInFolder(gmail, folder, isCaseSensitive)
 
 
 if __name__ == "__main__":
