@@ -40,14 +40,14 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
     database = {}
 
     # List of prefixes indicating it is a reply message
-    replyPrefixes = ['RE:', 'Re:', 'RES:', 'Res:', '=?ISO-8859-1?Q?Re=']
+    replyPrefixes = ['RE:', 'Re:', 'RES:', 'Res:']
 
     # Create list of identifiers of reply lines (we call reply line
     # the line introducing the quoted text in a reply message)
     replyLineIdentifiers = []
 
     # List of regular expressions to be filtered from the results
-    filterlist = [ r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*" , r"^\=\?.*" ]
+    filterlist = [r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*", r"^\=\?.*"]
 
     # Regular expression of word separators
     separators = r"[\s\.\,\;\:\!\?\(\)\<\>\"\'\*\\\/\=\+\~\_\[\]\{\}]+"
