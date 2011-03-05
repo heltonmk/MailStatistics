@@ -47,7 +47,7 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
     replyLineIdentifiers = []
 
     # List of regular expressions to be filtered from the results
-    filterlist = [ r".*\@.*\.com.*" , r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*" , r"^\=\?.*" ]
+    filterlist = [ r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*" , r"^\=\?.*" ]
 
     # Regular expression of word separators
     separators = r"[\s\.\,\;\:\!\?\(\)\<\>\"\'\*\\\/\=\+\~\_\[\]\{\}]+"

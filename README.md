@@ -18,10 +18,11 @@ http://www.clips.ua.ac.be/pages/pattern
 
 ##Changelog
 - 04.03.2011 [angela]
-    - Reply lines are now identified by the names and email addresses of the authors of the topic's previous messages.
-    - Headers in MIME encoded-word format are decoded.
-    - Words are split by whitespaces, filtered and then split by punctuation signs.
-    - Changed some variables' names.
+    - Reply lines are now identified by the names and email addresses of the authors of the topic's previous messages (all reply formats)
+    - Headers in MIME encoded-word format are decoded
+    - Words are split by whitespaces, filtered and then split by punctuation signs
+    - Filterlist updated to take into account more general email addresses
+    - Changed some variables' names
 - 01.03.2011 [cheng]
     - Cache temporarily disabled (temporary workaround for known issue 1)
 - 01.03.2011 [angela]
