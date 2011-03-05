@@ -47,7 +47,8 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
     replyLineIdentifiers = []
 
     # List of regular expressions to be filtered from the results
-    filterlist = [r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*", r"^\=\?.*"]
+    filterlist = [r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*"]
+    subj_filterlist = [r"[a-zA-Z0-9\.\-\_]+\@[a-zA-Z0-9][a-zA-Z0-9\.\-\_]*\.[a-zA-Z]+", r"[0-9]*\/[0-9][0-9]?\/[0-9]*", r"https?\:\/\/.*", r"\[.+\]"]
 
     # Regular expression of word separators
     separators = r"[\s\.\,\;\:\!\?\(\)\<\>\"\'\*\\\/\=\+\~\_\[\]\{\}]+"
@@ -66,9 +67,10 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
         #---- Email subject ----
 
         # Headers that contain non-ASCII data use the MIME encoded-word syntax
+        # mimify.mime_decode_header outputs only latin1 charset, encode to utf-8 to keep coherence
         subject = message.subject
         try:
-            subject = mimify.mime_decode_header(subject)
+            subject = mimify.mime_decode_header(subject).encode("utf-8")
         except UnicodeDecodeError:
             pass
 
@@ -83,7 +85,7 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
         if not isReply:
             subjectWords = subject.split()
             for word in subjectWords:
-                words = splitAndAddWord(word, filterlist, separators, words)
+                words = splitAndAddWord(word, subj_filterlist, separators, words)
 
         #---- Email body ----
 
