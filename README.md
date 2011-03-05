@@ -1,26 +1,24 @@
-Mail Statistics
------------------
+# Mail Statistics
 This small Python script retrieves all emails from a Label on gmail and
 generates a statistic on the ocurrence of the words.
 This script uses the Pattern web mining module found in:
 http://www.clips.ua.ac.be/pages/pattern
 
-Installation instructions
--------------------------------
+##Installation instructions
 - Clone this project
 - Download Pattern module (direct link to version 1.4 -
   http://www.clips.ua.ac.be/media/pattern-1.4.zip)
 - Copy pattern-1.4.zip to the project folder (inside MailStatistics)
 - unzip pattern-1.4.zip
 
-Usage
---------------------
+##Usage
 - On terminal, run: "python mailStatistics.py"
 - It will ask your gmail login, password
 - When asked for Folder name, insert Label name from gmail
 
-Changelog
---------------------
+##Changelog
+- 01.03.2011 [cheng]
+    - Cache temporarily disabled (temporary workaround for known issue 1)
 - 01.03.2011 [angela]
     - Ignore quoted text in reply email (limited to two reply formats commonly found in Gmail with English language settings)
     - Split words separated by punctuation signs without spaces
@@ -42,7 +40,6 @@ Changelog
 - 26.02.2011 [helton]
     - First release
 
-Known Issues
---------------------
-- Cached emails are not updated with Gmail
-- Cannot read HTML content inside emails (emails with formatted text)
+##Known Issues
+1. Cached emails are not updated with Gmail (workaround implemented)
+2. Cannot read HTML content inside emails (emails with formatted text)
