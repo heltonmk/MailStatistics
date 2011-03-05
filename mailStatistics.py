@@ -187,7 +187,8 @@ def printDatabase(database):
 def main():
     username = raw_input('Enter Gmail username: ')
     password = getpass.getpass('Enter Gmail password: ')
-    folder = raw_input('Enter Folder name in lower case: ')
+    folder = raw_input('Enter Folder name: ')
+    folder = folder.lower()
     caseSensitive = raw_input('Enter 1 or 0 for case sensitiveness or insensitiveness: ')
     if caseSensitive not in ['0','1']:
         print("ERROR: Enter either 0 or 1!")

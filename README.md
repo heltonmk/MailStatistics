@@ -22,6 +22,7 @@ http://www.clips.ua.ac.be/pages/pattern
     - Additional filterlist for words in subject
     - Filter tags in subjects
     - Encode subject words to UTF-8 to keep coherence
+    - Auto convert folder name to lower case
 - 04.03.2011 [angela]
     - Reply lines are now identified by the names and email addresses of the authors of the topic's previous messages (all reply formats)
     - Headers in MIME encoded-word format are decoded
