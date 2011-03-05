@@ -78,9 +78,9 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
         # as it is a repetition of the first message's subject.
 
         isReply = False
-        subjectPrefix = subject.split(None,1)[0]
-        if len(subjectPrefix) > 0:
-            if subjectPrefix in replyPrefixes:
+        subjectPrefix = subject.split(None,1)
+        if subjectPrefix != []:
+            if subjectPrefix[0] in replyPrefixes:
                 isReply = True
         if not isReply:
             subjectWords = subject.split()
