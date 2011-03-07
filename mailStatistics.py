@@ -116,6 +116,7 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
         replyLineIdentifiers = updateReplyLineIdentifiers(replyLineIdentifiers, message, isReply)
 
     printDatabase(sorted(database.iteritems(), key=operator.itemgetter(1), reverse=True))
+    printHTMLChart(sorted(database.iteritems(), key=operator.itemgetter(1), reverse=True))
 
 
 def splitAndAddWord(word, filters, separators, wordlist):
@@ -180,6 +181,67 @@ def printDatabase(database):
 
     for key, value in database:
         fileOutput.write(encode_utf8(key) + ' -> ' + str(value) + '\n')
+
+    fileOutput.close()
+
+
+def printHTMLChart(database):
+
+    # Increment output[i].txt until a non-existent filename is found
+    j = 0
+    while True:
+        filename = 'page' + str(j) + '.html'
+        if os.path.exists(filename):
+            j += 1
+        else:
+            break
+
+    fileOutput = open(filename, 'w')
+
+    keys = ""
+    values = ""
+
+    count = 0
+    for key, value in database:
+        keys += '"' + encode_utf8(key) + '", '
+        values += str(value) + ", "
+        count += 1
+        if count >= 10:
+            break
+
+    keys = keys[:-2]
+    values = values[:-2]
+    
+    fileOutput.write('')
+    fileOutput.write("""<!DOCTYPE html>
+                            <html>
+                        <head>
+                            <title>AwesomeChartJS demo</title>
+                            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                            <script type="application/javascript" src="awesomechart.js"> </script>
+                        </head>
+                        <body>
+
+                            <div class="charts_container">
+                                <div class="chart_container">
+                                    <canvas id="chartCanvas1" width="960" height="1000">
+                                        Your web-browser does not support the HTML 5 canvas element.
+                                    </canvas>
+                                </div>
+                            </div>
+                            <script type="application/javascript">
+                                var chart1 = new AwesomeChart("chartCanvas1");
+                                chart1.chartType = "horizontal bars";
+                                chart1.title = "Top 10 words";""");
+
+    fileOutput.write('chart1.data = [' + values + '];')
+    fileOutput.write('chart1.labels = [' + keys + '];')
+
+    fileOutput.write("""           chart1.randomColors = true;
+                                chart1.draw();
+                            </script>
+                        </body>
+                    </html>""")
 
     fileOutput.close()
 
