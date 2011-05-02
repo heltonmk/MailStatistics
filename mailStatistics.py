@@ -16,7 +16,7 @@ import operator
 import getpass
 import re
 import os.path
-import mimify
+import email.Header
 
 
 def encode_utf8(string):
@@ -67,10 +67,10 @@ def mostUsedWordsInFolder(mail, folder, isCaseSensitive):
         #---- Email subject ----
 
         # Headers that contain non-ASCII data use the MIME encoded-word syntax
-        # mimify.mime_decode_header outputs only latin1 charset, encode to utf-8 to keep coherence
+        # email.Header.decode_header outputs only latin1 charset, encode to utf-8 to keep coherence??
         subject = message.subject
         try:
-            subject = mimify.mime_decode_header(subject).encode("utf-8")
+            subject = email.Header.decode_header(subject).encode("utf-8")
         except UnicodeDecodeError:
             pass
 
