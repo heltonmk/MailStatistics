@@ -17,6 +17,8 @@ http://www.clips.ua.ac.be/pages/pattern
 - When asked for Folder name, insert Label name from gmail
 
 ##Changelog
+- 03.05.2011 [angela]
+    - Use of email package instead of mimify (deprecated) to decode MIME headers
 - 05.03.2011 [cheng]
     - Removed unused filters
     - Additional filterlist for words in subject
@@ -55,4 +57,3 @@ http://www.clips.ua.ac.be/pages/pattern
 ##Known Issues
 1. Cached emails are not updated with Gmail (workaround implemented)
 2. Cannot read HTML content inside emails (emails with formatted text)
-3. Using mimify deprecated package to decode MIME headers (implement new solution based on email package)
